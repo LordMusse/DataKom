@@ -1,0 +1,25 @@
+sudo mn --topo single,2 --mac --switch ovsk,port=6634 --controller remote,port=6653
+dump
+links
+h1 ifconfig -a
+h2 ifconfig -a
+s1 ifconfig -a
+h1 ping -c4 h2
+h2 ping -c4 h1
+pingall
+dpctl dump-flows
+sudo ovs-ofctl add-flow s1 priority=1,in_port=1,actions=output:2
+sudo ovs-ofctl add-flow s1 priority=1,in_port=2,actions=output:1
+sudo ovs-ofctl dump-flows s1
+dpctl dump-flows
+dpctl del-flows
+./simpleSwitch.sh
+openflow_v4 && ! (openflow_v4.type in {2 3})
+h1 ping -c4 h2
+exit
+sudo ./mininetSDN.py
+h1 ping -c4 h4
+sudo ovs-ofctl add-flow SWITCH priority=X,hard_timeout=Y,match1,..,matchN,actions=action1, .., actionN
+(replace SWITCH, X, Y, match1-N and action1-N)
+h1 arp -a
+iperf h1 h3
